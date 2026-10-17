@@ -1,0 +1,176 @@
+---
+import { REGION_REQUEST_FORM_URL } from '../consts';
+
+// 공유 링크(https://airtable.com/app.../shr...)를 임베드 주소(https://airtable.com/embed/app.../shr...)로 바꿉니다.
+const embedUrl = REGION_REQUEST_FORM_URL
+  ? REGION_REQUEST_FORM_URL.replace(/^https:\/\/airtable\.com\/(?!embed\/)/, 'https://airtable.com/embed/')
+  : '';
+---
+
+<button class="request-btn" type="button" data-region-request-open>
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+  </svg>
+  <span class="label-long">다른 지역 신청하기</span>
+  <span class="label-short">지역 신청</span>
+</button>
+
+<dialog class="request-dialog" data-region-request aria-labelledby="region-request-title">
+  <div class="dialog-head">
+    <div>
+      <h2 id="region-request-title">다른 지역 신청하기</h2>
+      <p>가 보고 싶은 지역을 알려 주세요. 로그인 없이 닉네임과 이메일만 있으면 됩니다.</p>
+    </div>
+    <button class="close-btn" type="button" data-region-request-close aria-label="닫기">
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+    </button>
+  </div>
+  {
+    embedUrl ? (
+      <iframe class="form-frame" data-src={embedUrl} title="다른 지역 신청 양식" loading="lazy" />
+    ) : (
+      <p class="not-ready">신청 양식을 준비하고 있어요. 조금만 기다려 주세요.</p>
+    )
+  }
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-region-request]');
+  const frame = dialog?.querySelector<HTMLIFrameElement>('iframe[data-src]');
+
+  document.querySelectorAll('[data-region-request-open]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      // 폼은 처음 열 때만 불러옵니다 (페이지 로딩을 느리게 하지 않도록)
+      if (frame && !frame.src) frame.src = frame.dataset.src!;
+      dialog?.showModal();
+    }),
+  );
+  dialog?.querySelector('[data-region-request-close]')?.addEventListener('click', () => dialog.close());
+  // 바깥 어두운 영역을 누르면 닫기
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>
+
+<style>
+  .request-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px 7px 11px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--bg);
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .request-btn:hover {
+    background: color-mix(in srgb, var(--accent) 85%, var(--ink));
+  }
+  .request-btn:focus-visible,
+  .close-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .request-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+  .label-short {
+    display: none;
+  }
+
+  .request-dialog {
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100dvh - 48px);
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  }
+  .request-dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .request-dialog::backdrop {
+    background: rgba(20, 18, 15, 0.5);
+    backdrop-filter: blur(2px);
+  }
+  .dialog-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 20px 14px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dialog-head h2 {
+    margin: 0 0 4px;
+    font-size: 21px;
+  }
+  .dialog-head p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .close-btn {
+    display: flex;
+    flex: none;
+    padding: 6px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink-faint);
+    cursor: pointer;
+  }
+  .close-btn:hover {
+    background: var(--line);
+    color: var(--ink);
+  }
+  .close-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  .form-frame {
+    display: block;
+    width: 100%;
+    height: 640px;
+    max-height: calc(100dvh - 160px);
+    border: 0;
+    background: #fff;
+  }
+  .not-ready {
+    margin: 0;
+    padding: 40px 24px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .label-long {
+      display: none;
+    }
+    .label-short {
+      display: inline;
+    }
+  }
+  @media (max-width: 560px) {
+    .request-btn {
+      padding: 6px 10px 6px 8px;
+      font-size: 13.5px;
+    }
+    .dialog-head {
+      padding: 16px 14px 12px 18px;
+    }
+  }
+</style>

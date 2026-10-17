@@ -1,0 +1,167 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, formatDate, readingMinutes, tagHref, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  newer?: Post;
+  older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { title, description, pubDate, updatedDate, region, tags, cover, coverAlt, draft } = post.data;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={title} description={description} image={cover}>
+  <article>
+    <header class="wrap narrow post-head">
+      <p class="meta">
+        {draft && <span class="draft-badge">초안 · 배포 안 됨</span>}
+        {region && <a class="chip" href={tagHref(region)}>{region}</a>}
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingMinutes(post.body)}분 읽기</span>
+      </p>
+      <h1>{title}</h1>
+      <p class="desc">{description}</p>
+      {updatedDate && <p class="updated">마지막 수정 {formatDate(updatedDate)}</p>}
+    </header>
+
+    {
+      cover && (
+        <figure class="cover wrap">
+          <img src={cover} alt={coverAlt} />
+        </figure>
+      )
+    }
+
+    <div class="wrap narrow prose">
+      <Content />
+    </div>
+
+    {
+      tags.length > 0 && (
+        <div class="wrap narrow tags">
+          {tags.map((tag) => (
+            <a class="tag" href={tagHref(tag)}>
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )
+    }
+
+    <nav class="wrap narrow pager" aria-label="다른 글">
+      {
+        older ? (
+          <a href={`/posts/${older.id}/`}>
+            <small>이전 글</small>
+            {older.data.title}
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        newer && (
+          <a class="next" href={`/posts/${newer.id}/`}>
+            <small>다음 글</small>
+            {newer.data.title}
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-head {
+    padding-top: 56px;
+    padding-bottom: 28px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    color: var(--ink-faint);
+    font-size: 14.5px;
+  }
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(28px, 4.6vw, 40px);
+  }
+  .desc {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 18px;
+  }
+  .updated {
+    margin: 10px 0 0;
+    color: var(--ink-faint);
+    font-size: 14px;
+  }
+  .cover {
+    margin: 0 auto 36px;
+  }
+  .cover img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+  }
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .pager a {
+    display: block;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    text-decoration: none;
+    line-height: 1.5;
+  }
+  .pager a:hover {
+    border-color: var(--accent);
+  }
+  .pager small {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--ink-faint);
+  }
+  .pager .next {
+    text-align: right;
+  }
+  @media (max-width: 640px) {
+    .post-head {
+      padding-top: 36px;
+    }
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .pager .next {
+      text-align: left;
+    }
+  }
+</style>

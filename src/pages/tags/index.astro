@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, tagHref } from '../../lib/posts';
+
+const posts = await getPosts();
+
+const regions = new Map<string, number>();
+const tags = new Map<string, number>();
+for (const post of posts) {
+  if (post.data.region) regions.set(post.data.region, (regions.get(post.data.region) ?? 0) + 1);
+  for (const tag of post.data.tags) tags.set(tag, (tags.get(tag) ?? 0) + 1);
+}
+const byCount = (m: Map<string, number>) => [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ko'));
+---
+
+<BaseLayout title="지역·태그" description="지역과 태그로 글 모아 보기">
+  <div class="wrap narrow page">
+    <h1>지역·태그</h1>
+
+    <h2>지역</h2>
+    <div class="list">
+      {
+        byCount(regions).map(([name, count]) => (
+          <a class="chip" href={tagHref(name)}>
+            {name} {count}
+          </a>
+        ))
+      }
+    </div>
+
+    <h2>태그</h2>
+    <div class="list">
+      {
+        byCount(tags).map(([name, count]) => (
+          <a class="tag" href={tagHref(name)}>
+            #{name} <span>{count}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: 56px;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 36px;
+  }
+  h2 {
+    margin: 36px 0 14px;
+    font-size: 20px;
+  }
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tag span {
+    color: var(--ink-faint);
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPosts, type Post } from '../../lib/posts';
+
+// 지역(region)과 태그(tags)를 같은 주소 체계(/tags/이름/)로 모아 보여 줍니다.
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const names = new Set(posts.flatMap((p) => [...p.data.tags, ...(p.data.region ? [p.data.region] : [])]));
+  return [...names].map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((p) => p.data.region === tag || p.data.tags.includes(tag)),
+    },
+  }));
+}
+
+interface Props {
+  tag: string;
+  posts: Post[];
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`'${tag}' 관련 글 ${posts.length}편`}>
+  <div class="wrap page">
+    <p class="back"><a href="/tags/">← 지역·태그 전체</a></p>
+    <h1>#{tag}</h1>
+    <p class="count">글 {posts.length}편</p>
+    <div class="grid">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: 48px;
+  }
+  .back {
+    margin: 0 0 8px;
+    font-size: 15px;
+  }
+  h1 {
+    margin: 0;
+    font-size: 36px;
+  }
+  .count {
+    margin: 4px 0 28px;
+    color: var(--ink-faint);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
