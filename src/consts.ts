@@ -15,6 +15,19 @@ export const SITE_OG_IMAGE = {
   alt: `${SITE_TITLE} — ${SITE_TAGLINE}`,
 };
 
+// '부산 1박 2일 가이드북' 판매 페이지(/guidebook/) 설정
+// purchaseUrl: 결제 페이지 주소(판매 플랫폼 상품 링크 등). 비워 두면 구매 버튼이 '준비 중'으로 보입니다.
+// ※ PDF 파일은 public 폴더에 넣지 마세요. 누구나 주소만 알면 결제 없이 내려받을 수 있습니다.
+export const GUIDEBOOK = {
+  title: '부산 1박 2일 가이드북',
+  price: 4900,
+  purchaseUrl: '',
+  pages: 30,
+  fileSize: '약 11MB',
+  tripDates: '2026년 11월 14일(토) ~ 15일(일)',
+  researchedOn: '2026년 10월 15~17일',
+};
+
 // 검색엔진 소유 확인 코드. 구글 서치 콘솔 / 네이버 서치어드바이저에서 받은
 // <meta ... content="여기 값"> 의 content 값만 붙여 넣으세요. 비워 두면 태그가 생략됩니다.
 export const GOOGLE_SITE_VERIFICATION = '';
