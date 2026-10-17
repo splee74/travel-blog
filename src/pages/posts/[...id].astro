@@ -22,7 +22,13 @@ const { title, description, pubDate, updatedDate, region, tags, cover, coverAlt,
 const { Content } = await render(post);
 ---
 
-<BaseLayout title={title} description={description} image={cover}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={cover}
+  imageAlt={coverAlt}
+  article={{ publishedTime: pubDate, modifiedTime: updatedDate, section: region, tags }}
+>
   <article>
     <header class="wrap narrow post-head">
       <p class="meta">
