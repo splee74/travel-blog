@@ -5,10 +5,10 @@
   --ink-soft: #5d574f;
   --ink-faint: #8f877c;
   --line: #e7e0d5;
-  --accent: #1f5f8b;
-  --accent-soft: #e3eef6;
-  --warm: #c8572b;
-  --warm-soft: #f8e6dc;
+  --accent: #1d5fd6;
+  --accent-soft: #e5eefc;
+  --warm: #0a74ad;
+  --warm-soft: #e0f2fb;
   --radius: 14px;
   --shadow: 0 1px 2px rgba(35, 32, 28, 0.04), 0 6px 20px rgba(35, 32, 28, 0.06);
   --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
@@ -27,10 +27,10 @@
     --ink-soft: #b8b0a4;
     --ink-faint: #877f74;
     --line: #34302b;
-    --accent: #7db6dd;
-    --accent-soft: #1d2e3a;
-    --warm: #ec8a5f;
-    --warm-soft: #3a261d;
+    --accent: #7fb0ff;
+    --accent-soft: #18263f;
+    --warm: #5cc4f0;
+    --warm-soft: #12303e;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
     color-scheme: dark;
   }
